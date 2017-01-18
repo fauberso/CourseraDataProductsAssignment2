@@ -1,0 +1,42 @@
+---
+title: "Causes of Death<br>in the City of Zurich"
+author: "Frédéric Auberson"
+date: "18 Januar 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(width=30)
+library(plotly)
+library(plyr)
+```
+
+## Introduction
+
+This is a simple example showing how to fetch and parse open data to generate a graph in a presentation.
+The data used here was downloaded from the Open Data portal of the City of Zurich (https://data.stadt-zuerich.ch) and shows the cause of death statistics for the City of Zurich since 1974.
+
+## The R Code
+
+```{r plotly, echo = TRUE, tidy=TRUE}
+download.file("https://data.stadt-zuerich.ch/dataset/6e138ab5-1ff0-4326-9777-d1b99ea63c03/resource/dc59c9f4-aa8d-4891-804b-d281b160077c/download/bev310od3100.csv", "cod.csv")
+cod <- read.csv("cod.csv",encoding = "UTF-8")
+
+colnames(cod) <- c("year", "cause", "count")
+cod$cause <- as.factor(cod$cause)
+cod$cause <- revalue(cod$cause, c("Alle übrigen Todesursachen"="Others", "Atmungsorgane"="Respiratory", "Demenz"="Dementia", "Krebskrankheiten"="Cancer", "Kreislaufsystem"="Circulatory", "Unfälle und Gewalteinwirkungen"="Accidents and Violent causes"))
+
+chart <- plot_ly(cod, x = ~year, y = ~count, color = ~cause, type = "scatter", mode = "lines")
+```
+
+## Resulting Plotly chart
+
+```{r display, echo = FALSE, warning = FALSE, fig.width=8, fig.height=5}
+chart
+```
+
+
+
+
+
